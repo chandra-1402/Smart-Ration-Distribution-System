@@ -1,0 +1,9 @@
+venv/
+__pycache__/
+*.pyc
+.DS_Store
+*.db
+pinggy.log
+pinggy.pid
+pinggy_new.log
+.env

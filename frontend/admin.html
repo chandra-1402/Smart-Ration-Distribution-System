@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PMGKAY Central Dashboard</title>
+    <link rel="stylesheet" href="/static/admin.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="login-screen" class="login-screen active">
+        <div class="login-card">
+            <h2>PMGKAY ADMIN</h2>
+            <p class="subtitle">Central Distribution System</p>
+            
+            <div class="input-group">
+                <label>Email</label>
+                <input type="email" id="login-email" value="admin@smartration.gov">
+            </div>
+            <div class="input-group">
+                <label>Password</label>
+                <input type="password" id="login-password" value="admin123">
+            </div>
+            
+            <button id="login-btn" class="login-btn">LOGIN</button>
+            <div id="login-error" class="error-msg hidden"></div>
+        </div>
+    </div>
+
+    <!-- Main Admin Layout -->
+    <div id="admin-layout" class="admin-layout hidden">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1>PMGKAY <br><span>Central Dashboard</span></h1>
+                <p>Govt. of India</p>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" data-target="dashboard" class="nav-item active">Dashboard</a>
+                <a href="#" data-target="beneficiaries" class="nav-item">Beneficiaries</a>
+                <a href="#" data-target="transactions" class="nav-item">Transactions</a>
+                <a href="#" data-target="reports" class="nav-item">Reports</a>
+                <a href="#" data-target="machine" class="nav-item">Machine Status</a>
+                <a href="#" data-target="diagnostics" class="nav-item">Diagnostics</a>
+                <a href="#" id="logout-btn" class="nav-item logout">Logout</a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <!-- Dashboard View -->
+            <div id="view-dashboard" class="view active">
+                <div class="header-row">
+                    <h2>Dashboard</h2>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>TOTAL BENEFICIARIES</h3>
+                        <div class="stat-value" id="stat-beneficiaries">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>TODAY'S TRANSACTIONS</h3>
+                        <div class="stat-value" id="stat-transactions">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>RATION DISPENSED</h3>
+                        <div class="stat-value" id="stat-dispensed">- KG</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>MACHINE STATUS</h3>
+                        <div class="stat-value status-online" id="stat-machine">-</div>
+                    </div>
+                </div>
+
+                <div class="recent-transactions mt-4">
+                    <h3>Recent Transactions</h3>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Transaction ID</th>
+                                    <th>Beneficiary</th>
+                                    <th>Quantity</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dashboard-recent-txns">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Beneficiaries View -->
+            <div id="view-beneficiaries" class="view">
+                <div class="header-row">
+                    <h2>Beneficiaries</h2>
+                    <button id="add-beneficiary-btn" class="primary-btn small-btn">+ Add Beneficiary</button>
+                </div>
+                
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Members</th>
+                                <th>Entitlement</th>
+                                <th>Collected</th>
+                                <th>Remaining</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="beneficiaries-list">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Transactions View -->
+            <div id="view-transactions" class="view">
+                <div class="header-row">
+                    <h2>Transactions</h2>
+                    <div style="display: flex; gap: 10px;">
+                        <button id="export-csv-btn" class="primary-btn small-btn" style="background-color: var(--success);">Export CSV</button>
+                        <button id="clear-transactions-btn" class="primary-btn small-btn" style="background-color: var(--error);">Clear All</button>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Transaction ID</th>
+                                <th>Beneficiary</th>
+                                <th>Target</th>
+                                <th>Actual</th>
+                                <th>Date/Time</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactions-list">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Reports View -->
+            <div id="view-reports" class="view">
+                <div class="header-row">
+                    <h2>Reports</h2>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>TOTAL BENEFICIARIES</h3>
+                        <div class="stat-value" id="rep-beneficiaries">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>TOTAL TRANSACTIONS</h3>
+                        <div class="stat-value" id="rep-transactions">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>TOTAL DISPENSED</h3>
+                        <div class="stat-value" id="rep-dispensed">- KG</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>SUCCESSFUL TXNS</h3>
+                        <div class="stat-value status-online" id="rep-success">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>REJECTED TXNS</h3>
+                        <div class="stat-value" style="color: var(--error);" id="rep-rejected">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>AVG DISPENSED</h3>
+                        <div class="stat-value" id="rep-avg">- KG</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Machine View -->
+            <div id="view-machine" class="view">
+                <div class="header-row">
+                    <h2>Machine Status</h2>
+                </div>
+                
+                <div class="machine-status-card">
+                    <div class="machine-header">
+                        <h3>Hardware Mode</h3>
+                        <span class="mode-badge" id="mach-mode-badge">SIMULATION</span>
+                    </div>
+                    
+                    <div class="components-grid">
+                        <div class="component-card">
+                            <h4>ESP32 Microcontroller</h4>
+                            <span class="status-pill status-ready" id="mach-esp32">Checking...</span>
+                        </div>
+                        <div class="component-card">
+                            <h4>Arduino Controller</h4>
+                            <span class="status-pill status-ready" id="mach-arduino">Checking...</span>
+                        </div>
+                        <div class="component-card">
+                            <h4>Load Cell</h4>
+                            <span class="status-pill status-active" id="mach-loadcell">Checking...</span>
+                        </div>
+                        <div class="component-card">
+                            <h4>Dispenser Servo</h4>
+                            <span class="status-pill status-active" id="mach-servo">Checking...</span>
+                        </div>
+                    </div>
+                    
+                    <div class="current-operation">
+                        <h4>Real-Time Telemetry</h4>
+                        <div class="op-details">
+                            <span class="op-label">System Status:</span>
+                            <strong class="op-value" id="mach-status">IDLE</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Diagnostics View -->
+            <div id="view-diagnostics" class="view">
+                <div class="header-row">
+                    <h2>Hardware Diagnostics</h2>
+                    <p style="color: var(--text-secondary);">Simple overview of machine components</p>
+                </div>
+                
+                <div class="diag-list-container">
+                    <!-- Load Cell -->
+                    <div class="diag-list-item">
+                        <div class="diag-item-info">
+                            <div class="diag-icon sensor-icon"></div>
+                            <div>
+                                <h4>Weight Sensor</h4>
+                                <span>Load Cell (HX711)</span>
+                            </div>
+                        </div>
+                        <div class="diag-item-status">
+                            <span class="status-badge" id="diag-loadcell-status">Unknown</span>
+                        </div>
+                        <div class="diag-item-activity">
+                            <span class="activity-text" id="diag-loadcell-val">-</span>
+                        </div>
+                    </div>
+
+                    <!-- Dispenser Servo -->
+                    <div class="diag-list-item">
+                        <div class="diag-item-info">
+                            <div class="diag-icon motor-icon"></div>
+                            <div>
+                                <h4>Dispenser Motor</h4>
+                                <span>Servo (SG90)</span>
+                            </div>
+                        </div>
+                        <div class="diag-item-status">
+                            <span class="status-badge" id="diag-servo-status">Unknown</span>
+                        </div>
+                        <div class="diag-item-activity">
+                            <span class="activity-text" id="diag-servo-val">-</span>
+                        </div>
+                    </div>
+
+                    <!-- Red LED -->
+                    <div class="diag-list-item">
+                        <div class="diag-item-info">
+                            <div class="diag-icon light-icon" style="background: rgba(239, 68, 68, 0.1); color: var(--error);"></div>
+                            <div>
+                                <h4>Warning Light</h4>
+                                <span>Red LED</span>
+                            </div>
+                        </div>
+                        <div class="diag-item-status">
+                            <span class="status-badge" id="diag-red-status">Unknown</span>
+                        </div>
+                        <div class="diag-item-activity">
+                            <span class="activity-text" id="diag-red-val">-</span>
+                        </div>
+                    </div>
+
+                    <!-- Yellow LED -->
+                    <div class="diag-list-item">
+                        <div class="diag-item-info">
+                            <div class="diag-icon light-icon" style="background: rgba(245, 158, 11, 0.1); color: var(--warning);"></div>
+                            <div>
+                                <h4>Standby Light</h4>
+                                <span>Yellow LED</span>
+                            </div>
+                        </div>
+                        <div class="diag-item-status">
+                            <span class="status-badge" id="diag-yellow-status">Unknown</span>
+                        </div>
+                        <div class="diag-item-activity">
+                            <span class="activity-text" id="diag-yellow-val">-</span>
+                        </div>
+                    </div>
+
+                    <!-- Green LED -->
+                    <div class="diag-list-item">
+                        <div class="diag-item-info">
+                            <div class="diag-icon light-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--success);"></div>
+                            <div>
+                                <h4>Active Light</h4>
+                                <span>Green LED</span>
+                            </div>
+                        </div>
+                        <div class="diag-item-status">
+                            <span class="status-badge" id="diag-green-status">Unknown</span>
+                        </div>
+                        <div class="diag-item-activity">
+                            <span class="activity-text" id="diag-green-val">-</span>
+                        </div>
+                    </div>
+
+                    <!-- LCD Display -->
+                    <div class="diag-list-item">
+                        <div class="diag-item-info">
+                            <div class="diag-icon display-icon"></div>
+                            <div>
+                                <h4>Information Screen</h4>
+                                <span>I2C LCD Display</span>
+                            </div>
+                        </div>
+                        <div class="diag-item-status">
+                            <span class="status-badge" id="diag-lcd-status">Unknown</span>
+                        </div>
+                        <div class="diag-item-activity">
+                            <span class="activity-text" id="diag-lcd-val">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <div id="modal-overlay" class="modal-overlay hidden">
+        <div id="beneficiary-modal" class="modal-card">
+            <h3 id="modal-title">Add Beneficiary</h3>
+            <div class="input-group">
+                <label>Beneficiary ID</label>
+                <input type="text" id="mod-ben-id">
+            </div>
+            <div class="input-group">
+                <label>Name</label>
+                <input type="text" id="mod-ben-name">
+            </div>
+            <div class="input-group">
+                <label>Family Members</label>
+                <input type="number" id="mod-ben-members">
+            </div>
+            <div class="input-group">
+                <label>Monthly Entitlement (KG)</label>
+                <input type="number" id="mod-ben-monthly" step="0.1">
+            </div>
+            <div class="input-group">
+                <label>Already Collected (KG)</label>
+                <input type="number" id="mod-ben-collected" step="0.1">
+            </div>
+            <div class="input-group">
+                <label>Status</label>
+                <select id="mod-ben-status">
+                    <option value="Active">Active</option>
+                    <option value="Inactive">Inactive</option>
+                </select>
+            </div>
+            
+            <div class="modal-actions">
+                <button id="mod-cancel" class="secondary-btn small-btn m-0">Cancel</button>
+                <button id="mod-save" class="primary-btn small-btn m-0">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/admin.js"></script>
+</body>
+</html>

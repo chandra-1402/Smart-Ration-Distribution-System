@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Ration Distribution System</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="app">
+        <!-- Verification Screen -->
+        <section id="verification-screen" class="screen active">
+            <div class="card">
+                <div class="header">
+                    <span class="pmgkay-badge">Govt. of India</span>
+                    <h1>PMGKAY RATION</h1>
+                    <h2>DISTRIBUTION SYSTEM</h2>
+                    <p class="subtitle">Transparent &bull; Accurate &bull; Automated</p>
+                </div>
+                
+                <div class="input-group">
+                    <label for="beneficiary-id">Aadhaar / Beneficiary ID</label>
+                    <input type="text" id="beneficiary-id" placeholder="Enter Beneficiary ID">
+                </div>
+
+                <button id="verify-btn" class="primary-btn">VERIFY & START</button>
+
+                <div class="help-text">
+                    <p>Prototype Mode</p>
+                    <p>Use a registered dummy Beneficiary ID.</p>
+                    <p>Example: <strong>JH1001</strong></p>
+                </div>
+                
+                <div id="verify-error" class="error-msg hidden"></div>
+            </div>
+        </section>
+
+        <!-- Loading Screen -->
+        <section id="loading-screen" class="screen hidden">
+            <div class="card center-content">
+                <div class="spinner"></div>
+                <h2>VERIFYING BENEFICIARY...</h2>
+                <ul class="loading-steps">
+                    <li>Checking registration...</li>
+                    <li>Checking entitlement...</li>
+                    <li>Checking remaining quota...</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Details Screen -->
+        <section id="details-screen" class="screen">
+            <div class="card details-card">
+                <div class="header">
+                    <h2>BENEFICIARY VERIFIED</h2>
+                </div>
+                <div class="details-grid">
+                    <div class="detail-item">
+                        <span class="label">ID Number</span>
+                        <span class="val" id="det-id"></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label">Name</span>
+                        <span class="val" id="det-name"></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label">Family Size</span>
+                        <span class="val" id="det-members"></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label">Monthly Quota</span>
+                        <span class="val"><span id="det-monthly"></span> KG</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label">Already Collected</span>
+                        <span class="val"><span id="det-collected"></span> KG</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label">Remaining Quota</span>
+                        <span class="val highlight"><span id="det-remaining"></span> KG</span>
+                    </div>
+                </div>
+                
+                <div class="auto-start-msg">
+                    <div class="spinner small-spinner"></div>
+                    <p>Preparing to dispense...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dispensing Screen -->
+        <section id="dispensing-screen" class="screen">
+            <div class="card dispense-card">
+                <div class="header warning-header">
+                    <h2>ACTIVE DISPENSING</h2>
+                    <p class="blink">Do not remove container</p>
+                </div>
+                
+                <div class="weight-display">
+                    <span class="large-value" id="disp-current">0.00 KG</span>
+                    <span class="unit-label">WEIGHT</span>
+                </div>
+                
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" id="disp-progress"></div>
+                </div>
+                <div class="progress-labels">
+                    <span class="progress-text" id="disp-percentage">0%</span>
+                </div>
+                
+                <div class="dispensing-details">
+                    <div class="info-row">
+                        <span class="label">Target:</span>
+                        <span class="val" id="disp-target"></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Remaining:</span>
+                        <span class="val" id="disp-remaining"></span>
+                    </div>
+                </div>
+                
+                <div class="beneficiary-mini">
+                    <p>Beneficiary: <span id="disp-uid"></span></p>
+                    <p>Name: <span id="disp-uname"></span></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Completion Screen -->
+        <section id="completion-screen" class="screen">
+            <div class="card">
+                <div class="success-header">
+                    <div class="success-icon">✓</div>
+                    <h2>RATION DISPENSED</h2>
+                    <p class="subtitle">Transaction Successful</p>
+                </div>
+
+                <div class="completion-details">
+                    <div class="detail-row">
+                        <span class="label">Target Quantity</span>
+                        <span class="value" id="comp-target"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Actual Dispensed</span>
+                        <span class="value status-success" id="comp-actual"></span>
+                    </div>
+                </div>
+                
+                <div class="receipt-box">
+                    <p>Transaction ID: <strong id="comp-txid"></strong></p>
+                    <p>Beneficiary ID: <strong id="comp-uid"></strong></p>
+                    <p>Date & Time: <strong id="comp-datetime"></strong></p>
+                </div>
+                
+                <p class="thank-you">Thank you for using PMGKAY Smart Ration System.</p>
+                
+                <button id="reset-btn" class="secondary-btn">New Transaction</button>
+            </div>
+        </section>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
