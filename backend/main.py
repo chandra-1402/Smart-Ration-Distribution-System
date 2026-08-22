@@ -136,13 +136,28 @@ async def websocket_endpoint(websocket: WebSocket):
 
 @app.get("/api/dispense/status")
 def get_dispense_status():
-    return {
-        "status": current_machine_status,
-        "currentWeight": current_weight_dispensed,
-        "targetWeight": current_target_weight,
-        "beneficiaryId": current_beneficiary_id,
-        "jobId": current_job_id
-    }
+    if HARDWARE_MODE:
+        if not hardware_active_job:
+            return {"status": "IDLE"}
+        return {
+            "status": hardware_active_job["status"],
+            "currentWeight": hardware_active_job.get("current_weight", 0.0),
+            "targetWeight": hardware_active_job["target_weight"],
+            "beneficiaryId": hardware_active_job["beneficiary_id"],
+            "jobId": hardware_active_job["job_id"]
+        }
+    else:
+        if not active_dispenses:
+            return {"status": "IDLE"}
+        job_id = list(active_dispenses.keys())[0]
+        job = active_dispenses[job_id]
+        return {
+            "status": job["status"],
+            "currentWeight": job["current"],
+            "targetWeight": job["target"],
+            "beneficiaryId": job.get("beneficiary_id", ""),
+            "jobId": job_id
+        }
 
 from pydantic import BaseModel
 
@@ -174,6 +189,12 @@ def verify_beneficiary(req: VerifyRequest, db: Session = Depends(get_db)):
         "collected_quantity": beneficiary.collected_quantity,
         "remaining_quantity": remaining
     }
+
+@app.post("/api/dispense/reset")
+def reset_dispense():
+    global hardware_active_job
+    hardware_active_job = None
+    return {"status": "success"}
 
 class StartDispenseRequest(BaseModel):
     beneficiary_id: str
@@ -241,6 +262,9 @@ async def hardware_sync(req: HardwareSyncRequest, db: Session = Depends(get_db))
     beneficiary_id = hardware_active_job["beneficiary_id"]
     beneficiary_name = hardware_active_job.get("beneficiary_name", "")
     
+    # Store current weight for polling fallback
+    hardware_active_job["current_weight"] = req.current_weight
+    
     # Broadcast current weight to frontend via WebSocket
     await manager.broadcast({
         "type": "weight:update",
@@ -294,13 +318,18 @@ async def hardware_sync(req: HardwareSyncRequest, db: Session = Depends(get_db))
             db.rollback()
             print(f"Error finalizing hardware transaction: {e}")
             
-        # Stop dispensing and reset active job
+        # Stop dispensing (do not clear active job yet so frontend can poll it)
         response = {"status": "STOP", "target_weight": target_weight, "job_id": job_id, "beneficiary_name": beneficiary_name}
-        hardware_active_job = None
         return response
+
         
+    # Ensure the hardware stops dispensing when completed
+    response_status = hardware_active_job["status"]
+    if response_status == "COMPLETED":
+        response_status = "STOP"
+
     return {
-        "status": hardware_active_job["status"],
+        "status": response_status,
         "target_weight": target_weight,
         "job_id": job_id,
         "beneficiary_name": beneficiary_name

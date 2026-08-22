@@ -150,8 +150,8 @@ void loop() {
       targetWeight = rxDoc["target_weight"].as<float>();
       String beneficiaryName = rxDoc.containsKey("beneficiary_name") ? rxDoc["beneficiary_name"].as<String>() : "";
       
-      // --- HARDCODED 0.50 KG SAFETY LIMIT ---
-      if (currentStatus == "DISPENSING" && currentWeight >= 0.50) {
+      // --- DYNAMIC SAFETY LIMIT ---
+      if (currentStatus == "DISPENSING" && currentWeight >= targetWeight) {
          dispenserServo.write(0); // INSTANTLY CLOSE GATE
          newStatus = "STOP";      // Force the system to stop
       }
@@ -178,8 +178,14 @@ void loop() {
         lcd.setCursor(0, 1);
         lcd.print("Weight: " + String(currentWeight, 2) + " kg");
       } 
-      else if (newStatus == "STOP" && currentStatus != "STOP") {
-        // We handle this exclusively in the Physical Hardware section below
+      else if (newStatus == "STOP") {
+        if (currentStatus != "STOP") {
+          // Handled in the Physical Hardware section below
+        } else {
+          lcd.print("Transaction Done");
+          lcd.setCursor(0, 1);
+          lcd.print("Remove Container");
+        }
       }
 
       // HANDLE PHYSICAL HARDWARE CHANGES

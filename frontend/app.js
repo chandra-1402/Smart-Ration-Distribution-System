@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Start HTTP polling fallback every 500ms since localtunnel drops WebSockets
         pollInterval = setInterval(async () => {
             try {
-                const res = await fetch('/api/dispense/status');
+                const res = await fetch(`/api/dispense/status?t=${Date.now()}`, { cache: 'no-store' });
                 if(!res.ok) return;
                 const data = await res.json();
                 
@@ -163,6 +163,10 @@ document.addEventListener('DOMContentLoaded', () => {
         dispPercentage.textContent = pct + '%';
 
         if(status === 'COMPLETED') {
+            if (pollInterval) {
+                clearInterval(pollInterval);
+                pollInterval = null;
+            }
             setTimeout(() => {
                 showCompletionScreen(payload);
             }, 1000);
@@ -180,7 +184,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if(ws) ws.close();
     }
 
-    resetBtn.addEventListener('click', () => {
+    resetBtn.addEventListener('click', async () => {
+        try {
+            await fetch('/api/dispense/reset', { method: 'POST' });
+        } catch(e) {}
+
         idInput.value = '';
         errorMsg.classList.add('hidden');
         currentBeneficiary = null;
