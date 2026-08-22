@@ -1,9 +1,7 @@
-venv/
 __pycache__/
 *.pyc
+venv/
 .DS_Store
-*.db
 pinggy.log
 pinggy.pid
 pinggy_new.log
-.env
