@@ -11,10 +11,8 @@
 const char* ssid = "Redmi 12";
 const char* password = "chandan00"; 
 
-// --- LOCAL NETWORK URL (PERMANENT FIX) ---
-// Since your Mac and ESP32 are on the same WiFi, they can talk directly!
-// No Pinggy needed. This URL will not expire.
-String serverUrl = "http://10.245.48.68:3001/api/hardware/sync";
+// --- PRODUCTION DEPLOYMENT URL ---
+String serverUrl = "https://rationsetu.uniqway.online/api/hardware/sync";
 
 // --- PINS ---
 const int LOADCELL_DOUT_PIN = 16;
@@ -102,7 +100,8 @@ void loop() {
       if (currentWeight < 0) currentWeight = 0.0; // Prevents negative numbers
     }
 
-    WiFiClient client;
+    WiFiClientSecure client;
+    client.setInsecure(); // Required to connect to HTTPS (Render) without verifying SSL certificates
     HTTPClient http;
     http.begin(client, serverUrl);
     http.addHeader("Content-Type", "application/json");
@@ -147,6 +146,9 @@ void loop() {
       deserializeJson(rxDoc, response);
       
       String newStatus = rxDoc["status"].as<String>();
+      if (newStatus == "COMPLETED") {
+          newStatus = "STOP";
+      }
       targetWeight = rxDoc["target_weight"].as<float>();
       String beneficiaryName = rxDoc.containsKey("beneficiary_name") ? rxDoc["beneficiary_name"].as<String>() : "";
       
@@ -179,12 +181,18 @@ void loop() {
         lcd.print("Weight: " + String(currentWeight, 2) + " kg");
       } 
       else if (newStatus == "STOP") {
-        if (currentStatus != "STOP") {
+        if (currentStatus == "DISPENSING") {
           // Handled in the Physical Hardware section below
         } else {
-          lcd.print("Transaction Done");
-          lcd.setCursor(0, 1);
-          lcd.print("Remove Container");
+          if (currentWeight > 0.1) {
+            lcd.print("Transaction Done");
+            lcd.setCursor(0, 1);
+            lcd.print("Remove Container");
+          } else {
+            lcd.print("Ready. Awaiting");
+            lcd.setCursor(0, 1);
+            lcd.print("Verification...");
+          }
         }
       }
 
@@ -195,7 +203,7 @@ void loop() {
          digitalWrite(LED_GREEN, HIGH);
          dispenserServo.write(90); // OPEN GATE
       } 
-      else if (newStatus == "STOP" && currentStatus != "STOP") {
+      else if (newStatus == "STOP" && currentStatus == "DISPENSING") {
          digitalWrite(LED_RED, HIGH);
          digitalWrite(LED_YELLOW, LOW);
          digitalWrite(LED_GREEN, LOW);

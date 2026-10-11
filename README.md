@@ -1,4 +1,9 @@
-# Smart Ration Distribution & Anti-Diversion System
+# Smart Ration Distribution & Anti-Diversion System (RationSetu)
+
+> 🌐 **Live Deployed Application**: [https://rationsetu.uniqway.online](https://rationsetu.uniqway.online)  
+> - **Beneficiary Portal**: [https://rationsetu.uniqway.online](https://rationsetu.uniqway.online)  
+> - **Admin Dashboard**: [https://rationsetu.uniqway.online/admin](https://rationsetu.uniqway.online/admin)  
+> - **API Docs**: [https://rationsetu.uniqway.online/docs](https://rationsetu.uniqway.online/docs)
 
 ## 1. Project Overview
 This project is a prototype web application designed for a Smart Ration Distribution System. The system digitally verifies a beneficiary using their Aadhaar/Beneficiary ID, automatically calculates their remaining entitlement based on monthly quotas, and simulates the hardware dispensing process via WebSockets.

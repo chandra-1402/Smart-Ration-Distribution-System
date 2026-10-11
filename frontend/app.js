@@ -93,10 +93,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ beneficiary_id: id })
             });
 
-            const data = await res.json();
+            let data;
+            try {
+                data = await res.json();
+            } catch (e) {
+                throw new Error("Invalid response from server.");
+            }
 
             if(!res.ok) {
-                throw new Error(data.detail || 'Verification failed');
+                let msg = 'Verification failed';
+                if (data && data.detail) {
+                    msg = Array.isArray(data.detail) ? data.detail[0].msg : data.detail;
+                }
+                throw new Error(msg);
             }
 
             currentBeneficiary = data;
@@ -178,7 +187,7 @@ document.addEventListener('DOMContentLoaded', () => {
         compActual.textContent = payload.currentWeight.toFixed(2) + ' KG';
         compTxid.textContent = payload.jobId;
         compUid.textContent = payload.beneficiaryId;
-        compDatetime.textContent = new Date().toLocaleString();
+        compDatetime.textContent = new Date().toLocaleString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).toUpperCase();
 
         showScreen(completeScreen);
         if(ws) ws.close();
