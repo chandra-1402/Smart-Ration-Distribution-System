@@ -4,7 +4,5 @@ sqlalchemy
 pydantic
 bcrypt
 opencv-python-headless
-torch
-torchvision
-facenet-pytorch
+numpy
 pillow
