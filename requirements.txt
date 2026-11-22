@@ -3,3 +3,8 @@ uvicorn
 sqlalchemy
 pydantic
 bcrypt
+opencv-python-headless
+torch
+torchvision
+facenet-pytorch
+pillow

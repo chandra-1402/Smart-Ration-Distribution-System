@@ -4,8 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Ration Distribution System</title>
-    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/style.css?v=20261122d">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- MediaPipe Face Mesh for Real-Time Liveness & Blink Detection -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js" crossorigin="anonymous"></script>
 </head>
 <body>
     <div id="app">
@@ -36,6 +39,44 @@
             </div>
         </section>
 
+        <!-- Face Authentication Screen (Aadhaar FaceRD Style) -->
+        <section id="face-auth-screen" class="screen">
+            <div class="card face-card">
+                <div class="header">
+                    <span class="pmgkay-badge">UIDAI Biometric Liveness</span>
+                    <h1>FACE AUTHENTICATION</h1>
+                    <p class="subtitle" id="face-ben-info">Verifying Beneficiary...</p>
+                </div>
+
+                <div class="camera-wrapper">
+                    <video id="face-video" autoplay playsinline muted></video>
+                    <canvas id="face-canvas" class="hidden"></canvas>
+                    
+                    <!-- Aadhaar FaceRD Oval Frame Guide -->
+                    <div class="face-oval-container">
+                        <div class="face-oval" id="face-oval">
+                            <div class="face-scan-line" id="face-scan-line"></div>
+                        </div>
+                    </div>
+
+                    <!-- Floating Instruction Badge -->
+                    <div class="liveness-pill searching" id="liveness-pill">
+                        <span class="pill-icon" id="liveness-icon">👤</span>
+                        <span class="pill-text" id="liveness-text">Position face inside oval</span>
+                    </div>
+                </div>
+
+                <div class="face-tips">
+                    <p id="face-subtext">👁️ Keep your face inside the frame and <strong>BLINK YOUR EYES</strong> to capture</p>
+                </div>
+
+                <div class="face-actions">
+                    <button id="manual-snap-btn" class="secondary-btn small-btn">Manual Capture</button>
+                    <button id="face-cancel-btn" class="text-btn">Back</button>
+                </div>
+            </div>
+        </section>
+
         <!-- Loading Screen -->
         <section id="loading-screen" class="screen hidden">
             <div class="card center-content">
@@ -55,6 +96,14 @@
                 <div class="header">
                     <h2>BENEFICIARY VERIFIED</h2>
                 </div>
+                
+                <div class="verified-avatar-wrap">
+                    <img id="det-photo" class="verified-avatar" src="" alt="Beneficiary Photo">
+                    <div class="verified-shield">
+                        <span class="shield-icon">✓</span> Aadhaar Face Verified
+                    </div>
+                </div>
+
                 <div class="details-grid">
                     <div class="detail-item">
                         <span class="label">ID Number</span>
@@ -160,6 +209,6 @@
         </section>
     </div>
 
-    <script src="/static/app.js"></script>
+    <script src="/static/app.js?v=20261122e"></script>
 </body>
 </html>

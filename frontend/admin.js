@@ -120,7 +120,12 @@ document.addEventListener('DOMContentLoaded', () => {
             
             data.forEach(b => {
                 const tr = document.createElement('tr');
+                const photoHtml = b.photo_url 
+                    ? `<img src="${b.photo_url}?t=${Date.now()}" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 2px solid var(--success);" title="Enrolled Face">`
+                    : `<span style="font-size: 11px; padding: 2px 6px; border-radius: 4px; background: #fee2e2; color: #dc2626; font-weight: 600;">No Face</span>`;
+
                 tr.innerHTML = `
+                    <td>${photoHtml}</td>
                     <td>${b.beneficiary_id}</td>
                     <td>${b.name}</td>
                     <td>${b.family_members}</td>
@@ -288,6 +293,7 @@ document.addEventListener('DOMContentLoaded', () => {
             updateCard('yellow', data.led_yellow);
             updateCard('green', data.led_green);
             updateCard('lcd', data.lcd);
+            updateCard('buzzer', data.buzzer);
             
         } catch(e) { console.error(e); }
     }
@@ -308,15 +314,153 @@ document.addEventListener('DOMContentLoaded', () => {
     const modCancel = document.getElementById('mod-cancel');
     const modSave = document.getElementById('mod-save');
 
-    addBtn.addEventListener('click', () => {
-        openBeneficiaryModal();
-    });
-    
-    modCancel.addEventListener('click', () => {
-        modalOverlay.classList.add('hidden');
-    });
+    // Face Biometric Enrollment State & Elements
+    let currentEnrollPhotoBase64 = null;
+    let adminWebcamStream = null;
+
+    const photoPreview = document.getElementById('mod-ben-photo-preview');
+    const photoPlaceholder = document.getElementById('mod-ben-photo-placeholder');
+    const photoFileInput = document.getElementById('mod-ben-photo-file');
+    const faceStatusBadge = document.getElementById('face-status-badge');
+    const faceFilename = document.getElementById('face-enroll-filename');
+    const removePhotoBtn = document.getElementById('mod-remove-photo-btn');
+    const webcamDrawer = document.getElementById('admin-webcam-drawer');
+    const webcamVideo = document.getElementById('admin-webcam-video');
+    const webcamCanvas = document.getElementById('admin-webcam-canvas');
+    const webcamErrorEl = document.getElementById('admin-webcam-error');
+
+    // Expose functions globally for robust inline onclick / onchange handlers
+    window.handleAdminPhotoSelect = function(e) {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+            currentEnrollPhotoBase64 = evt.target.result;
+            if (photoPreview) {
+                photoPreview.src = currentEnrollPhotoBase64;
+                photoPreview.classList.remove('hidden');
+            }
+            if (photoPlaceholder) photoPlaceholder.classList.add('hidden');
+            if (faceStatusBadge) {
+                faceStatusBadge.textContent = 'Enrolled';
+                faceStatusBadge.className = 'face-badge-status enrolled';
+            }
+            if (faceFilename) faceFilename.textContent = file.name || 'Photo loaded';
+            if (removePhotoBtn) removePhotoBtn.classList.remove('hidden');
+            window.closeAdminWebcam();
+        };
+        reader.readAsDataURL(file);
+    };
+
+    window.startAdminWebcam = async function() {
+        if (webcamErrorEl) webcamErrorEl.classList.add('hidden');
+        if (webcamDrawer) webcamDrawer.classList.remove('hidden');
+
+        try {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                throw new Error("Camera API is not supported in this browser or context. Please use 'Upload Photo'.");
+            }
+
+            if (adminWebcamStream) {
+                adminWebcamStream.getTracks().forEach(t => t.stop());
+            }
+
+            const constraints = {
+                video: { width: { ideal: 640 }, height: { ideal: 480 }, facingMode: 'user' },
+                audio: false
+            };
+            adminWebcamStream = await navigator.mediaDevices.getUserMedia(constraints);
+            if (webcamVideo) {
+                webcamVideo.srcObject = adminWebcamStream;
+                webcamVideo.muted = true;
+                await webcamVideo.play();
+            }
+        } catch (err) {
+            console.error("Webcam access error:", err);
+            if (webcamErrorEl) {
+                webcamErrorEl.textContent = "Camera Error: " + (err.message || "Could not access webcam. Check browser permissions.");
+                webcamErrorEl.classList.remove('hidden');
+            } else {
+                alert("Could not access camera: " + err.message);
+            }
+        }
+    };
+
+    window.captureAdminFaceSnapshot = function() {
+        if (!webcamVideo || !webcamCanvas) return;
+        const w = webcamVideo.videoWidth || 320;
+        const h = webcamVideo.videoHeight || 240;
+        webcamCanvas.width = w;
+        webcamCanvas.height = h;
+
+        const ctx = webcamCanvas.getContext('2d');
+        // Mirror the image horizontally to match webcam display
+        ctx.translate(w, 0);
+        ctx.scale(-1, 1);
+        ctx.drawImage(webcamVideo, 0, 0, w, h);
+
+        currentEnrollPhotoBase64 = webcamCanvas.toDataURL('image/jpeg', 0.92);
+        if (photoPreview) {
+            photoPreview.src = currentEnrollPhotoBase64;
+            photoPreview.classList.remove('hidden');
+        }
+        if (photoPlaceholder) photoPlaceholder.classList.add('hidden');
+        if (faceStatusBadge) {
+            faceStatusBadge.textContent = 'Captured';
+            faceStatusBadge.className = 'face-badge-status enrolled';
+        }
+        if (faceFilename) faceFilename.textContent = 'Webcam snapshot captured';
+        if (removePhotoBtn) removePhotoBtn.classList.remove('hidden');
+
+        window.closeAdminWebcam();
+    };
+
+    window.closeAdminWebcam = function() {
+        if (adminWebcamStream) {
+            adminWebcamStream.getTracks().forEach(t => t.stop());
+            adminWebcamStream = null;
+        }
+        if (webcamVideo) webcamVideo.srcObject = null;
+        if (webcamDrawer) webcamDrawer.classList.add('hidden');
+        if (webcamErrorEl) webcamErrorEl.classList.add('hidden');
+    };
+
+    window.removeAdminPhoto = function() {
+        currentEnrollPhotoBase64 = null;
+        if (photoFileInput) photoFileInput.value = '';
+        if (photoPreview) {
+            photoPreview.src = '';
+            photoPreview.classList.add('hidden');
+        }
+        if (photoPlaceholder) photoPlaceholder.classList.remove('hidden');
+        if (faceStatusBadge) {
+            faceStatusBadge.textContent = 'Not Enrolled';
+            faceStatusBadge.className = 'face-badge-status not-enrolled';
+        }
+        if (faceFilename) faceFilename.textContent = 'No photo selected';
+        if (removePhotoBtn) removePhotoBtn.classList.add('hidden');
+        window.closeAdminWebcam();
+    };
+
+    if (addBtn) {
+        addBtn.addEventListener('click', () => {
+            openBeneficiaryModal();
+        });
+    }
+
+    if (modCancel) {
+        modCancel.addEventListener('click', () => {
+            window.closeAdminWebcam();
+            modalOverlay.classList.add('hidden');
+        });
+    }
 
     function openBeneficiaryModal(bData = null) {
+        window.closeAdminWebcam();
+        currentEnrollPhotoBase64 = null;
+        if (photoFileInput) photoFileInput.value = '';
+
         document.getElementById('mod-ben-id').value = bData ? bData.beneficiary_id : '';
         document.getElementById('mod-ben-name').value = bData ? bData.name : '';
         document.getElementById('mod-ben-members').value = bData ? bData.family_members : '1';
@@ -324,40 +468,80 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('mod-ben-collected').value = bData ? bData.collected_quantity : '0.0';
         document.getElementById('mod-ben-status').value = bData ? bData.status : 'Active';
         
+        if (bData && bData.photo_url) {
+            if (photoPreview) {
+                photoPreview.src = `${bData.photo_url}?t=${Date.now()}`;
+                photoPreview.classList.remove('hidden');
+            }
+            if (photoPlaceholder) photoPlaceholder.classList.add('hidden');
+            if (faceStatusBadge) {
+                faceStatusBadge.textContent = 'Enrolled';
+                faceStatusBadge.className = 'face-badge-status enrolled';
+            }
+            if (faceFilename) faceFilename.textContent = 'Registered face biometric';
+            if (removePhotoBtn) removePhotoBtn.classList.remove('hidden');
+        } else {
+            if (photoPreview) {
+                photoPreview.src = '';
+                photoPreview.classList.add('hidden');
+            }
+            if (photoPlaceholder) photoPlaceholder.classList.remove('hidden');
+            if (faceStatusBadge) {
+                faceStatusBadge.textContent = 'Not Enrolled';
+                faceStatusBadge.className = 'face-badge-status not-enrolled';
+            }
+            if (faceFilename) faceFilename.textContent = 'No photo selected';
+            if (removePhotoBtn) removePhotoBtn.classList.add('hidden');
+        }
+
         editModeId = bData ? bData.id : null;
         document.getElementById('modal-title').textContent = bData ? 'Edit Beneficiary' : 'Add Beneficiary';
         modalOverlay.classList.remove('hidden');
     }
 
-    modSave.addEventListener('click', async () => {
-        const payload = {
-            beneficiary_id: document.getElementById('mod-ben-id').value,
-            name: document.getElementById('mod-ben-name').value,
-            family_members: parseInt(document.getElementById('mod-ben-members').value),
-            monthly_entitlement: parseFloat(document.getElementById('mod-ben-monthly').value),
-            collected_quantity: parseFloat(document.getElementById('mod-ben-collected').value),
-            status: document.getElementById('mod-ben-status').value
-        };
-
-        const url = editModeId ? `/api/beneficiaries/${editModeId}` : '/api/beneficiaries';
-        const method = editModeId ? 'PUT' : 'POST';
-
-        try {
-            const res = await fetch(url, {
-                method: method,
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-            if(res.ok) {
-                modalOverlay.classList.add('hidden');
-                loadBeneficiaries();
-            } else {
-                const err = await res.json();
-                alert('Error: ' + err.detail);
+    if (modSave) {
+        modSave.addEventListener('click', async () => {
+            const benId = document.getElementById('mod-ben-id').value.trim();
+            const name = document.getElementById('mod-ben-name').value.trim();
+            if (!benId || !name) {
+                alert("Beneficiary ID and Name are required.");
+                return;
             }
-        } catch(e) {
-            console.error(e);
-            alert('An error occurred');
-        }
-    });
+
+            const payload = {
+                beneficiary_id: benId,
+                name: name,
+                family_members: parseInt(document.getElementById('mod-ben-members').value) || 1,
+                monthly_entitlement: parseFloat(document.getElementById('mod-ben-monthly').value) || 0.0,
+                collected_quantity: parseFloat(document.getElementById('mod-ben-collected').value) || 0.0,
+                status: document.getElementById('mod-ben-status').value
+            };
+
+            if (currentEnrollPhotoBase64) {
+                payload.photo_base64 = currentEnrollPhotoBase64;
+            }
+
+            const url = editModeId ? `/api/beneficiaries/${editModeId}` : '/api/beneficiaries';
+            const method = editModeId ? 'PUT' : 'POST';
+
+            try {
+                const res = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if(res.ok) {
+                    window.closeAdminWebcam();
+                    modalOverlay.classList.add('hidden');
+                    loadBeneficiaries();
+                } else {
+                    const err = await res.json();
+                    alert('Error: ' + (err.detail || 'Failed to save beneficiary'));
+                }
+            } catch(e) {
+                console.error(e);
+                alert('An error occurred while saving.');
+            }
+        });
+    }
 });

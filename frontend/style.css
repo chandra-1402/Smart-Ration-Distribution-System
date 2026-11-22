@@ -378,3 +378,196 @@ body {
 .receipt-box strong { color: var(--text-main); }
 
 .thank-you { font-size: 15px; font-weight: 600; color: var(--primary); margin-bottom: 24px; }
+
+/* ========================================================
+   AADHAAR FaceRD BIOMETRIC AUTHENTICATION STYLES
+   ======================================================== */
+.face-card {
+    padding: 24px 20px;
+}
+
+.camera-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 360px;
+    height: 340px;
+    margin: 16px auto;
+    border-radius: 18px;
+    overflow: hidden;
+    background: #000;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+}
+
+#face-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scaleX(-1); /* Mirror selfie camera */
+}
+
+.face-oval-container {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.face-oval {
+    width: 190px;
+    height: 250px;
+    border-radius: 50% / 38%;
+    border: 4px solid var(--saffron);
+    box-shadow: 0 0 0 9999px rgba(15, 23, 42, 0.65);
+    position: relative;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.face-oval.aligned {
+    border-color: #3b82f6; /* Blue: Centered */
+}
+
+.face-oval.blink-prompt {
+    border-color: #f59e0b; /* Amber: Prompting to Blink */
+    animation: ovalPulse 1.2s infinite alternate;
+}
+
+.face-oval.success {
+    border-color: #10b981 !important; /* Green: Captured */
+    box-shadow: 0 0 0 9999px rgba(16, 185, 129, 0.3), 0 0 30px #10b981 !important;
+    transform: scale(1.03);
+}
+
+.face-scan-line {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #38bdf8, transparent);
+    animation: scanLine 2s infinite ease-in-out;
+    opacity: 0.8;
+}
+
+@keyframes scanLine {
+    0% { top: 10%; opacity: 0; }
+    50% { opacity: 1; }
+    100% { top: 90%; opacity: 0; }
+}
+
+@keyframes ovalPulse {
+    0% { transform: scale(1); box-shadow: 0 0 0 9999px rgba(15, 23, 42, 0.65), 0 0 8px #f59e0b; }
+    100% { transform: scale(1.02); box-shadow: 0 0 0 9999px rgba(15, 23, 42, 0.65), 0 0 20px #f59e0b; }
+}
+
+.liveness-pill {
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(15, 23, 42, 0.88);
+    color: #ffffff;
+    padding: 8px 16px;
+    border-radius: 30px;
+    font-size: 13px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    backdrop-filter: blur(8px);
+    z-index: 20;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    white-space: nowrap;
+    transition: all 0.3s ease;
+}
+
+.liveness-pill.searching {
+    border-color: var(--saffron);
+}
+
+.liveness-pill.blink {
+    border-color: #f59e0b;
+    background: rgba(180, 83, 9, 0.95);
+    animation: pillBlink 0.8s infinite alternate;
+}
+
+.liveness-pill.success {
+    border-color: #10b981;
+    background: rgba(6, 95, 70, 0.95);
+}
+
+@keyframes pillBlink {
+    0% { transform: translateX(-50%) scale(1); }
+    100% { transform: translateX(-50%) scale(1.05); }
+}
+
+.face-tips {
+    margin-top: 10px;
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.face-tips strong {
+    color: var(--saffron);
+}
+
+.face-actions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 18px;
+}
+
+.text-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: underline;
+    padding: 8px 12px;
+}
+.text-btn:hover {
+    color: var(--text-main);
+}
+
+/* Verified Avatar Badge in Details Screen */
+.verified-avatar-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.verified-avatar {
+    width: 84px;
+    height: 84px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #10b981;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    background: #e2e8f0;
+}
+
+.verified-shield {
+    margin-top: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(16, 185, 129, 0.12);
+    color: #15803d;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.shield-icon {
+    font-size: 13px;
+    font-weight: 900;
+}

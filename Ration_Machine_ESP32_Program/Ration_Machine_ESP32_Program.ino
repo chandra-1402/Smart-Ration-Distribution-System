@@ -21,6 +21,17 @@ const int SERVO_PIN = 18;
 const int LED_RED = 25;
 const int LED_YELLOW = 26;
 const int LED_GREEN = 27;
+const int BUZZER_PIN = 23; // Connect Buzzer module signal pin (GPIO 23)
+
+// ==============================================================
+// BUZZER CONFIGURATION
+// 3-Pin Buzzer Modules (VCC, I/O, GND) are Active-LOW modules:
+// - Pin HIGH (3.3V) = SILENT (OFF)
+// - Pin LOW  (0V)   = BEEP (ON)
+// ==============================================================
+const bool BUZZER_IS_ACTIVE_HIGH = false; // false = Active-LOW module (standard for 3-pin modules)
+const int BUZZER_ON  = BUZZER_IS_ACTIVE_HIGH ? HIGH : LOW;   // LOW turns buzzer ON
+const int BUZZER_OFF = BUZZER_IS_ACTIVE_HIGH ? LOW  : HIGH;  // HIGH turns buzzer OFF (Silent)
 
 HX711 scale;
 Servo dispenserServo;
@@ -30,7 +41,24 @@ String currentStatus = "IDLE";
 float currentWeight = 0.0;
 float targetWeight = 0.0;
 
+// Helper function to produce buzzer beep sounds
+void beepBuzzer(int times, int durationMs, int pauseMs) {
+  for (int i = 0; i < times; i++) {
+    digitalWrite(BUZZER_PIN, BUZZER_ON);
+    delay(durationMs);
+    digitalWrite(BUZZER_PIN, BUZZER_OFF);
+    if (i < times - 1) {
+      delay(pauseMs);
+    }
+  }
+}
+
 void setup() {
+  // Pre-latch pin to HIGH (OFF) before enabling output mode to prevent any startup click
+  digitalWrite(BUZZER_PIN, BUZZER_OFF);
+  pinMode(BUZZER_PIN, OUTPUT);
+  digitalWrite(BUZZER_PIN, BUZZER_OFF);
+
   Serial.begin(115200);
   delay(1000);
   
@@ -92,6 +120,9 @@ void setup() {
 }
 
 void loop() {
+  // Ensure buzzer is strictly off in regular operation
+  digitalWrite(BUZZER_PIN, BUZZER_OFF);
+
   if (WiFi.status() == WL_CONNECTED) {
     
     // READ THE REAL PHYSICAL WEIGHT
@@ -135,6 +166,10 @@ void loop() {
     JsonObject sLcd = sensors.createNestedObject("lcd");
     sLcd["status"] = "CONNECTED";
     sLcd["value"] = currentStatus;
+
+    JsonObject sBuzzer = sensors.createNestedObject("buzzer");
+    sBuzzer["status"] = "CONNECTED";
+    sBuzzer["value"] = "READY";
     
     String payload;
     serializeJson(txDoc, payload);
@@ -202,6 +237,10 @@ void loop() {
          digitalWrite(LED_YELLOW, LOW);
          digitalWrite(LED_GREEN, HIGH);
          dispenserServo.write(90); // OPEN GATE
+
+         // 2 beeps of 1 second each to notify beneficiary dispensing has STARTED
+         beepBuzzer(2, 1000, 500);
+         digitalWrite(BUZZER_PIN, BUZZER_OFF);
       } 
       else if (newStatus == "STOP" && currentStatus == "DISPENSING") {
          digitalWrite(LED_RED, HIGH);
@@ -216,7 +255,11 @@ void loop() {
          lcd.setCursor(0, 1);
          lcd.print("Take your Ration");
          
-         delay(10000); // Wait exactly 10 seconds
+         // 2 beeps of 1 second each to notify beneficiary transaction is COMPLETED
+         beepBuzzer(2, 1000, 500);
+         digitalWrite(BUZZER_PIN, BUZZER_OFF);
+         
+         delay(7500); // Wait remaining time (total 10 seconds) so user can take ration
       }
       else if (newStatus == "IDLE" && currentStatus != "IDLE") {
          digitalWrite(LED_RED, LOW);

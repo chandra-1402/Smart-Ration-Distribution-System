@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PMGKAY Central Dashboard</title>
-    <link rel="stylesheet" href="/static/admin.css">
+    <link rel="stylesheet" href="/static/admin.css?v=20261122c">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -103,6 +103,7 @@
                     <table class="data-table">
                         <thead>
                             <tr>
+                                <th>Photo</th>
                                 <th>ID</th>
                                 <th>Name</th>
                                 <th>Members</th>
@@ -332,6 +333,23 @@
                             <span class="activity-text" id="diag-lcd-val">-</span>
                         </div>
                     </div>
+
+                    <!-- Buzzer Module -->
+                    <div class="diag-list-item">
+                        <div class="diag-item-info">
+                            <div class="diag-icon buzzer-icon" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6;"></div>
+                            <div>
+                                <h4>Audio Indicator</h4>
+                                <span>Buzzer Module</span>
+                            </div>
+                        </div>
+                        <div class="diag-item-status">
+                            <span class="status-badge" id="diag-buzzer-status">Unknown</span>
+                        </div>
+                        <div class="diag-item-activity">
+                            <span class="activity-text" id="diag-buzzer-val">-</span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -369,14 +387,77 @@
                     <option value="Inactive">Inactive</option>
                 </select>
             </div>
+
+            <!-- Face Biometric Enrollment -->
+            <div class="input-group">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                    <label style="margin: 0; font-weight: 600;">Face Biometric Data (Photo)</label>
+                    <span id="face-status-badge" class="face-badge-status not-enrolled">Not Enrolled</span>
+                </div>
+                
+                <div class="face-enroll-card">
+                    <div class="face-enroll-preview-row">
+                        <div class="face-avatar-wrapper">
+                            <img id="mod-ben-photo-preview" src="" alt="Face Preview" class="face-enroll-img hidden">
+                            <div id="mod-ben-photo-placeholder" class="face-placeholder-avatar">
+                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="face-enroll-info">
+                            <div id="face-enroll-filename" class="face-enroll-name">No photo selected</div>
+                            <div class="face-enroll-desc">Upload portrait or use webcam for 1:1 face matching</div>
+                        </div>
+                    </div>
+
+                    <div class="face-enroll-btn-group">
+                        <!-- Native Label Trigger for Universal Browser & Safari Support -->
+                        <label for="mod-ben-photo-file" class="face-btn upload-face-btn" id="mod-upload-label">
+                            📁 Upload Photo
+                        </label>
+                        <input type="file" id="mod-ben-photo-file" accept="image/*" onchange="handleAdminPhotoSelect(event)" style="position: absolute; opacity: 0; width: 0.1px; height: 0.1px; z-index: -1;">
+                        
+                        <button type="button" class="face-btn webcam-face-btn" id="mod-webcam-btn" onclick="startAdminWebcam()">
+                            📷 Take Photo
+                        </button>
+
+                        <button type="button" class="face-btn remove-face-btn hidden" id="mod-remove-photo-btn" onclick="removeAdminPhoto()">
+                            🗑️ Remove
+                        </button>
+                    </div>
+
+                    <!-- Admin Webcam Snapshot Drawer -->
+                    <div id="admin-webcam-drawer" class="admin-webcam-box hidden">
+                        <div class="webcam-live-indicator">
+                            <span class="live-dot"></span> LIVE WEBCAM FEED
+                        </div>
+                        <div class="webcam-viewport">
+                            <video id="admin-webcam-video" autoplay playsinline muted></video>
+                            <div class="webcam-face-guide"></div>
+                        </div>
+                        <canvas id="admin-webcam-canvas" class="hidden"></canvas>
+                        <div id="admin-webcam-error" class="hidden webcam-error-msg"></div>
+                        <div class="webcam-actions">
+                            <button type="button" class="primary-btn small-btn m-0" id="admin-snap-btn" onclick="captureAdminFaceSnapshot()" style="background: #15803d;">
+                                📸 Capture Face
+                            </button>
+                            <button type="button" class="secondary-btn small-btn m-0" id="admin-close-webcam-btn" onclick="closeAdminWebcam()">
+                                ✕ Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
             
             <div class="modal-actions">
-                <button id="mod-cancel" class="secondary-btn small-btn m-0">Cancel</button>
-                <button id="mod-save" class="primary-btn small-btn m-0">Save</button>
+                <button type="button" id="mod-cancel" class="secondary-btn small-btn m-0">Cancel</button>
+                <button type="button" id="mod-save" class="primary-btn small-btn m-0">Save</button>
             </div>
         </div>
     </div>
 
-    <script src="/static/admin.js"></script>
+    <script src="/static/admin.js?v=20261122c"></script>
 </body>
 </html>

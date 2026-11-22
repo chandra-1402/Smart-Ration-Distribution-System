@@ -29,6 +29,7 @@ class Beneficiary(Base):
     monthly_entitlement = Column(Float, nullable=False)
     collected_quantity = Column(Float, default=0.0)
     status = Column(String, default=BeneficiaryStatus.ACTIVE.value)
+    photo_url = Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 

@@ -5,3 +5,6 @@ venv/
 pinggy.log
 pinggy.pid
 pinggy_new.log
+*.zip
+backend/uploads/faces/*.jpg
+!backend/uploads/faces/.gitkeep
