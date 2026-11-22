@@ -328,6 +328,14 @@ document.addEventListener('DOMContentLoaded', () => {
         showScreen(verifyScreen);
     });
 
+    // Enter key listener on Beneficiary ID input
+    idInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            verifyBtn.click();
+        }
+    });
+
     verifyBtn.addEventListener('click', async () => {
         const id = idInput.value.trim();
         if(!id) return;

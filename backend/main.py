@@ -36,6 +36,17 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Force No-Cache for all static assets and HTML to prevent Cloudflare/Browser cache stale versions
+@app.middleware("http")
+async def add_no_cache_headers(request, call_next):
+    response = await call_next(request)
+    path = request.url.path
+    if path.startswith("/static/") or path.startswith("/uploads/") or path in ["/", "/admin", "/user"]:
+        response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, max-age=0"
+        response.headers["Pragma"] = "no-cache"
+        response.headers["Expires"] = "0"
+    return response
+
 # In-memory store for active dispenses
 active_dispenses: Dict[str, dict] = {}
 
@@ -757,16 +768,21 @@ static_dir = os.path.join(os.path.dirname(__file__), "..", "frontend")
 app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
 @app.get("/admin/{path:path}")
+@app.head("/admin/{path:path}")
 def serve_admin_app(path: str):
     return FileResponse(os.path.join(static_dir, "admin.html"), headers={"Cache-Control": "no-cache, no-store, must-revalidate"})
 
 @app.get("/admin")
+@app.head("/admin")
 def serve_admin_base():
     return FileResponse(os.path.join(static_dir, "admin.html"), headers={"Cache-Control": "no-cache, no-store, must-revalidate"})
+
 @app.get("/user")
+@app.head("/user")
 def serve_user_app():
     return FileResponse(os.path.join(static_dir, "index.html"), headers={"Cache-Control": "no-cache, no-store, must-revalidate"})
 
 @app.get("/")
+@app.head("/")
 def serve_root():
     return FileResponse(os.path.join(static_dir, "index.html"), headers={"Cache-Control": "no-cache, no-store, must-revalidate"})
