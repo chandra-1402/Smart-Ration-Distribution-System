@@ -449,12 +449,26 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    if (modCancel) {
-        modCancel.addEventListener('click', () => {
-            window.closeAdminWebcam();
-            modalOverlay.classList.add('hidden');
+    const modClose = document.getElementById('mod-close');
+    function closeBeneficiaryModal() {
+        window.closeAdminWebcam();
+        if (modalOverlay) modalOverlay.classList.add('hidden');
+    }
+
+    if (modCancel) modCancel.addEventListener('click', closeBeneficiaryModal);
+    if (modClose) modClose.addEventListener('click', closeBeneficiaryModal);
+
+    if (modalOverlay) {
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) closeBeneficiaryModal();
         });
     }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modalOverlay && !modalOverlay.classList.contains('hidden')) {
+            closeBeneficiaryModal();
+        }
+    });
 
     function openBeneficiaryModal(bData = null) {
         window.closeAdminWebcam();

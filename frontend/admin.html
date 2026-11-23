@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PMGKAY Central Dashboard</title>
-    <link rel="stylesheet" href="/static/admin.css?v=20261122_v5">
+    <link rel="stylesheet" href="/static/admin.css?v=20261123_v6">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -359,105 +359,173 @@
     <!-- Modals -->
     <div id="modal-overlay" class="modal-overlay hidden">
         <div id="beneficiary-modal" class="modal-card">
-            <h3 id="modal-title">Add Beneficiary</h3>
-            <div class="input-group">
-                <label>Beneficiary ID</label>
-                <input type="text" id="mod-ben-id">
-            </div>
-            <div class="input-group">
-                <label>Name</label>
-                <input type="text" id="mod-ben-name">
-            </div>
-            <div class="input-group">
-                <label>Family Members</label>
-                <input type="number" id="mod-ben-members">
-            </div>
-            <div class="input-group">
-                <label>Monthly Entitlement (KG)</label>
-                <input type="number" id="mod-ben-monthly" step="0.1">
-            </div>
-            <div class="input-group">
-                <label>Already Collected (KG)</label>
-                <input type="number" id="mod-ben-collected" step="0.1">
-            </div>
-            <div class="input-group">
-                <label>Status</label>
-                <select id="mod-ben-status">
-                    <option value="Active">Active</option>
-                    <option value="Inactive">Inactive</option>
-                </select>
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <div class="modal-header-text">
+                    <div class="modal-badge-row">
+                        <span class="gov-badge-pill">PMGKAY NFSA</span>
+                        <span class="modal-meta-tag">UIDAI Verified Registry</span>
+                    </div>
+                    <h3 id="modal-title">Edit Beneficiary</h3>
+                    <p class="modal-subtitle">Manage beneficiary profile, food grain entitlement, and facial biometric credentials.</p>
+                </div>
+                <button type="button" id="mod-close" class="modal-close-icon" title="Close (Esc)">&times;</button>
             </div>
 
-            <!-- Face Biometric Enrollment -->
-            <div class="input-group">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                    <label style="margin: 0; font-weight: 600;">Face Biometric Data (Photo)</label>
-                    <span id="face-status-badge" class="face-badge-status not-enrolled">Not Enrolled</span>
-                </div>
-                
-                <div class="face-enroll-card">
-                    <div class="face-enroll-preview-row">
-                        <div class="face-avatar-wrapper">
-                            <img id="mod-ben-photo-preview" src="" alt="Face Preview" class="face-enroll-img hidden">
-                            <div id="mod-ben-photo-placeholder" class="face-placeholder-avatar">
-                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                                    <circle cx="12" cy="7" r="4"></circle>
-                                </svg>
+            <!-- Modal Body -->
+            <div class="modal-body">
+                <!-- Section 1: Beneficiary Identity -->
+                <div class="form-section">
+                    <div class="section-header">
+                        <span class="section-icon">🪪</span>
+                        <h4>Beneficiary Information</h4>
+                    </div>
+
+                    <div class="form-grid-2">
+                        <div class="input-group">
+                            <label for="mod-ben-id">Beneficiary / Ration ID <span class="req">*</span></label>
+                            <div class="input-with-icon">
+                                <span class="input-icon">#</span>
+                                <input type="text" id="mod-ben-id" placeholder="e.g. JH1005" autocomplete="off">
                             </div>
                         </div>
-                        <div class="face-enroll-info">
-                            <div id="face-enroll-filename" class="face-enroll-name">No photo selected</div>
-                            <div class="face-enroll-desc">Upload portrait or use webcam for 1:1 face matching</div>
+
+                        <div class="input-group">
+                            <label for="mod-ben-status">Account Status</label>
+                            <div class="select-wrapper">
+                                <select id="mod-ben-status">
+                                    <option value="Active">🟢 Active (Authorized)</option>
+                                    <option value="Inactive">🔴 Inactive (Suspended)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="input-group full-width">
+                            <label for="mod-ben-name">Full Name (as per Aadhaar / NFSA) <span class="req">*</span></label>
+                            <div class="input-with-icon">
+                                <span class="input-icon">👤</span>
+                                <input type="text" id="mod-ben-name" placeholder="Enter beneficiary full name">
+                            </div>
                         </div>
                     </div>
+                </div>
 
-                    <div class="face-enroll-btn-group">
-                        <!-- Native Label Trigger for Universal Browser & Safari Support -->
-                        <label for="mod-ben-photo-file" class="face-btn upload-face-btn" id="mod-upload-label">
-                            📁 Upload Photo
-                        </label>
-                        <input type="file" id="mod-ben-photo-file" accept="image/*" onchange="handleAdminPhotoSelect(event)" style="position: absolute; opacity: 0; width: 0.1px; height: 0.1px; z-index: -1;">
-                        
-                        <button type="button" class="face-btn webcam-face-btn" id="mod-webcam-btn" onclick="startAdminWebcam()">
-                            📷 Take Photo
-                        </button>
-
-                        <button type="button" class="face-btn remove-face-btn hidden" id="mod-remove-photo-btn" onclick="removeAdminPhoto()">
-                            🗑️ Remove
-                        </button>
+                <!-- Section 2: Quota & Entitlement -->
+                <div class="form-section">
+                    <div class="section-header">
+                        <span class="section-icon">⚖️</span>
+                        <h4>Entitlement & Foodgrain Quota</h4>
                     </div>
 
-                    <!-- Admin Webcam Snapshot Drawer -->
-                    <div id="admin-webcam-drawer" class="admin-webcam-box hidden">
-                        <div class="webcam-live-indicator">
-                            <span class="live-dot"></span> LIVE WEBCAM FEED
+                    <div class="form-grid-3">
+                        <div class="input-group">
+                            <label for="mod-ben-members">Family Size</label>
+                            <div class="input-with-suffix">
+                                <input type="number" id="mod-ben-members" min="1" step="1" value="1">
+                                <span class="input-suffix">Persons</span>
+                            </div>
                         </div>
-                        <div class="webcam-viewport">
-                            <video id="admin-webcam-video" autoplay playsinline muted></video>
-                            <div class="webcam-face-guide"></div>
+
+                        <div class="input-group">
+                            <label for="mod-ben-monthly">Monthly Quota</label>
+                            <div class="input-with-suffix">
+                                <input type="number" id="mod-ben-monthly" min="0" step="0.1" value="10.0">
+                                <span class="input-suffix">KG</span>
+                            </div>
                         </div>
-                        <canvas id="admin-webcam-canvas" class="hidden"></canvas>
-                        <div id="admin-webcam-error" class="hidden webcam-error-msg"></div>
-                        <div class="webcam-actions">
-                            <button type="button" class="primary-btn small-btn m-0" id="admin-snap-btn" onclick="captureAdminFaceSnapshot()" style="background: #15803d;">
-                                📸 Capture Face
+
+                        <div class="input-group">
+                            <label for="mod-ben-collected">Already Collected</label>
+                            <div class="input-with-suffix">
+                                <input type="number" id="mod-ben-collected" min="0" step="0.1" value="0.0">
+                                <span class="input-suffix">KG</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 3: Face Biometric Data -->
+                <div class="form-section biometric-section">
+                    <div class="section-header justify-between">
+                        <div class="header-left">
+                            <span class="section-icon">📸</span>
+                            <h4>Aadhaar Face Biometric Data</h4>
+                        </div>
+                        <span id="face-status-badge" class="face-badge-status not-enrolled">Not Enrolled</span>
+                    </div>
+
+                    <div class="face-enroll-card">
+                        <div class="face-enroll-preview-row">
+                            <div class="face-avatar-wrapper">
+                                <img id="mod-ben-photo-preview" src="" alt="Face Preview" class="face-enroll-img hidden">
+                                <div id="mod-ben-photo-placeholder" class="face-placeholder-avatar">
+                                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                        <circle cx="12" cy="7" r="4"></circle>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="face-enroll-info">
+                                <div id="face-enroll-filename" class="face-enroll-name">No photo selected</div>
+                                <div class="face-enroll-desc">Upload a clear front-facing portrait or use the webcam to capture the reference face for 1:1 biometric matching.</div>
+                            </div>
+                        </div>
+
+                        <div class="face-enroll-btn-group">
+                            <!-- Native Label Trigger for Universal Browser & Safari Support -->
+                            <label for="mod-ben-photo-file" class="face-btn upload-face-btn" id="mod-upload-label">
+                                📁 Upload Photo
+                            </label>
+                            <input type="file" id="mod-ben-photo-file" accept="image/*" onchange="handleAdminPhotoSelect(event)" style="position: absolute; opacity: 0; width: 0.1px; height: 0.1px; z-index: -1;">
+                            
+                            <button type="button" class="face-btn webcam-face-btn" id="mod-webcam-btn" onclick="startAdminWebcam()">
+                                📷 Take Photo
                             </button>
-                            <button type="button" class="secondary-btn small-btn m-0" id="admin-close-webcam-btn" onclick="closeAdminWebcam()">
-                                ✕ Cancel
+
+                            <button type="button" class="face-btn remove-face-btn hidden" id="mod-remove-photo-btn" onclick="removeAdminPhoto()">
+                                🗑️ Remove
                             </button>
+                        </div>
+
+                        <!-- Admin Webcam Snapshot Drawer -->
+                        <div id="admin-webcam-drawer" class="admin-webcam-box hidden">
+                            <div class="webcam-live-indicator">
+                                <span class="live-dot"></span> LIVE WEBCAM FEED
+                            </div>
+                            <div class="webcam-viewport">
+                                <video id="admin-webcam-video" autoplay playsinline muted></video>
+                                <div class="webcam-face-guide"></div>
+                            </div>
+                            <canvas id="admin-webcam-canvas" class="hidden"></canvas>
+                            <div id="admin-webcam-error" class="hidden webcam-error-msg"></div>
+                            <div class="webcam-actions">
+                                <button type="button" class="primary-btn small-btn m-0" id="admin-snap-btn" onclick="captureAdminFaceSnapshot()" style="background: #15803d;">
+                                    📸 Capture Face
+                                </button>
+                                <button type="button" class="secondary-btn small-btn m-0" id="admin-close-webcam-btn" onclick="closeAdminWebcam()">
+                                    ✕ Cancel
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            
-            <div class="modal-actions">
-                <button type="button" id="mod-cancel" class="secondary-btn small-btn m-0">Cancel</button>
-                <button type="button" id="mod-save" class="primary-btn small-btn m-0">Save</button>
+
+            <!-- Modal Footer (Sticky) -->
+            <div class="modal-footer">
+                <div class="modal-footer-hint">
+                    <span class="lock-icon">🔒</span> Official PMGKAY Database Record
+                </div>
+                <div class="modal-footer-actions">
+                    <button type="button" id="mod-cancel" class="modal-btn btn-cancel">Cancel</button>
+                    <button type="button" id="mod-save" class="modal-btn btn-save">
+                        <span>Save Beneficiary</span>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 
-    <script src="/static/admin.js?v=20261122_v5"></script>
+        <script src="/static/admin.js?v=20261123_v6"></script>
 </body>
 </html>
