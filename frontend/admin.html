@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,13 +8,14 @@
     <link rel="stylesheet" href="/static/admin.css?v=20261123_v8">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
+
 <body>
     <!-- Login Screen -->
     <div id="login-screen" class="login-screen active">
         <div class="login-card">
             <h2>PMGKAY ADMIN</h2>
             <p class="subtitle">Central Distribution System</p>
-            
+
             <div class="input-group">
                 <label>Email</label>
                 <input type="email" id="login-email" value="admin@smartration.gov">
@@ -22,7 +24,7 @@
                 <label>Password</label>
                 <input type="password" id="login-password" value="admin123">
             </div>
-            
+
             <button id="login-btn" class="login-btn">LOGIN</button>
             <div id="login-error" class="error-msg hidden"></div>
         </div>
@@ -52,7 +54,7 @@
                 <div class="header-row">
                     <h2>Dashboard</h2>
                 </div>
-                
+
                 <div class="stats-grid">
                     <div class="stat-card">
                         <h3>TOTAL BENEFICIARIES</h3>
@@ -98,7 +100,7 @@
                     <h2>Beneficiaries</h2>
                     <button id="add-beneficiary-btn" class="primary-btn small-btn">+ Add Beneficiary</button>
                 </div>
-                
+
                 <div class="table-container">
                     <table class="data-table">
                         <thead>
@@ -126,8 +128,10 @@
                 <div class="header-row">
                     <h2>Transactions</h2>
                     <div style="display: flex; gap: 10px;">
-                        <button id="export-csv-btn" class="primary-btn small-btn" style="background-color: var(--success);">Export CSV</button>
-                        <button id="clear-transactions-btn" class="primary-btn small-btn" style="background-color: var(--error);">Clear All</button>
+                        <button id="export-csv-btn" class="primary-btn small-btn"
+                            style="background-color: var(--success);">Export CSV</button>
+                        <button id="clear-transactions-btn" class="primary-btn small-btn"
+                            style="background-color: var(--error);">Clear All</button>
                     </div>
                 </div>
                 <div class="table-container">
@@ -154,7 +158,7 @@
                 <div class="header-row">
                     <h2>Reports</h2>
                 </div>
-                
+
                 <div class="stats-grid">
                     <div class="stat-card">
                         <h3>TOTAL BENEFICIARIES</h3>
@@ -188,13 +192,13 @@
                 <div class="header-row">
                     <h2>Machine Status</h2>
                 </div>
-                
+
                 <div class="machine-status-card">
                     <div class="machine-header">
                         <h3>Hardware Mode</h3>
                         <span class="mode-badge" id="mach-mode-badge">SIMULATION</span>
                     </div>
-                    
+
                     <div class="components-grid">
                         <div class="component-card">
                             <h4>ESP32 Microcontroller</h4>
@@ -213,7 +217,7 @@
                             <span class="status-pill status-active" id="mach-servo">Checking...</span>
                         </div>
                     </div>
-                    
+
                     <div class="current-operation">
                         <h4>Real-Time Telemetry</h4>
                         <div class="op-details">
@@ -230,7 +234,7 @@
                     <h2>Hardware Diagnostics</h2>
                     <p style="color: var(--text-secondary);">Simple overview of machine components</p>
                 </div>
-                
+
                 <div class="diag-list-container">
                     <!-- Load Cell -->
                     <div class="diag-list-item">
@@ -269,7 +273,8 @@
                     <!-- Red LED -->
                     <div class="diag-list-item">
                         <div class="diag-item-info">
-                            <div class="diag-icon light-icon" style="background: rgba(239, 68, 68, 0.1); color: var(--error);"></div>
+                            <div class="diag-icon light-icon"
+                                style="background: rgba(239, 68, 68, 0.1); color: var(--error);"></div>
                             <div>
                                 <h4>Warning Light</h4>
                                 <span>Red LED</span>
@@ -286,7 +291,8 @@
                     <!-- Yellow LED -->
                     <div class="diag-list-item">
                         <div class="diag-item-info">
-                            <div class="diag-icon light-icon" style="background: rgba(245, 158, 11, 0.1); color: var(--warning);"></div>
+                            <div class="diag-icon light-icon"
+                                style="background: rgba(245, 158, 11, 0.1); color: var(--warning);"></div>
                             <div>
                                 <h4>Standby Light</h4>
                                 <span>Yellow LED</span>
@@ -303,7 +309,8 @@
                     <!-- Green LED -->
                     <div class="diag-list-item">
                         <div class="diag-item-info">
-                            <div class="diag-icon light-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--success);"></div>
+                            <div class="diag-icon light-icon"
+                                style="background: rgba(16, 185, 129, 0.1); color: var(--success);"></div>
                             <div>
                                 <h4>Active Light</h4>
                                 <span>Green LED</span>
@@ -337,7 +344,8 @@
                     <!-- Buzzer Module -->
                     <div class="diag-list-item">
                         <div class="diag-item-info">
-                            <div class="diag-icon buzzer-icon" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6;"></div>
+                            <div class="diag-icon buzzer-icon"
+                                style="background: rgba(59, 130, 246, 0.1); color: #3b82f6;"></div>
                             <div>
                                 <h4>Audio Indicator</h4>
                                 <span>Buzzer Module</span>
@@ -367,7 +375,8 @@
                         <span class="modal-meta-tag">Central Beneficiary Registry</span>
                     </div>
                     <h3 id="modal-title">Edit Beneficiary</h3>
-                    <p class="modal-subtitle">Manage beneficiary profile, food grain entitlement, and facial biometric credentials.</p>
+                    <p class="modal-subtitle">Manage beneficiary profile, food grain entitlement, and facial biometric
+                        credentials.</p>
                 </div>
                 <button type="button" id="mod-close" class="modal-close-icon" title="Close (Esc)">&times;</button>
             </div>
@@ -457,9 +466,11 @@
                     <div class="face-enroll-card">
                         <div class="face-enroll-preview-row">
                             <div class="face-avatar-wrapper">
-                                <img id="mod-ben-photo-preview" src="" alt="Face Preview" class="face-enroll-img hidden">
+                                <img id="mod-ben-photo-preview" src="" alt="Face Preview"
+                                    class="face-enroll-img hidden">
                                 <div id="mod-ben-photo-placeholder" class="face-placeholder-avatar">
-                                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                                         <circle cx="12" cy="7" r="4"></circle>
                                     </svg>
@@ -467,7 +478,8 @@
                             </div>
                             <div class="face-enroll-info">
                                 <div id="face-enroll-filename" class="face-enroll-name">No photo selected</div>
-                                <div class="face-enroll-desc">Upload a clear front-facing portrait or use the webcam to capture the reference face for 1:1 biometric matching.</div>
+                                <div class="face-enroll-desc">Upload a clear front-facing portrait or use the webcam to
+                                    capture the reference face for 1:1 biometric matching.</div>
                             </div>
                         </div>
 
@@ -476,13 +488,17 @@
                             <label for="mod-ben-photo-file" class="face-btn upload-face-btn" id="mod-upload-label">
                                 📁 Upload Photo
                             </label>
-                            <input type="file" id="mod-ben-photo-file" accept="image/*" onchange="handleAdminPhotoSelect(event)" style="position: absolute; opacity: 0; width: 0.1px; height: 0.1px; z-index: -1;">
-                            
-                            <button type="button" class="face-btn webcam-face-btn" id="mod-webcam-btn" onclick="startAdminWebcam()">
+                            <input type="file" id="mod-ben-photo-file" accept="image/*"
+                                onchange="handleAdminPhotoSelect(event)"
+                                style="position: absolute; opacity: 0; width: 0.1px; height: 0.1px; z-index: -1;">
+
+                            <button type="button" class="face-btn webcam-face-btn" id="mod-webcam-btn"
+                                onclick="startAdminWebcam()">
                                 📷 Take Photo
                             </button>
 
-                            <button type="button" class="face-btn remove-face-btn hidden" id="mod-remove-photo-btn" onclick="removeAdminPhoto()">
+                            <button type="button" class="face-btn remove-face-btn hidden" id="mod-remove-photo-btn"
+                                onclick="removeAdminPhoto()">
                                 🗑️ Remove
                             </button>
                         </div>
@@ -499,10 +515,12 @@
                             <canvas id="admin-webcam-canvas" class="hidden"></canvas>
                             <div id="admin-webcam-error" class="hidden webcam-error-msg"></div>
                             <div class="webcam-actions">
-                                <button type="button" class="primary-btn small-btn m-0" id="admin-snap-btn" onclick="captureAdminFaceSnapshot()" style="background: #15803d;">
+                                <button type="button" class="primary-btn small-btn m-0" id="admin-snap-btn"
+                                    onclick="captureAdminFaceSnapshot()" style="background: #15803d;">
                                     📸 Capture Face
                                 </button>
-                                <button type="button" class="secondary-btn small-btn m-0" id="admin-close-webcam-btn" onclick="closeAdminWebcam()">
+                                <button type="button" class="secondary-btn small-btn m-0" id="admin-close-webcam-btn"
+                                    onclick="closeAdminWebcam()">
                                     ✕ Cancel
                                 </button>
                             </div>
@@ -528,4 +546,5 @@
 
         <script src="/static/admin.js?v=20261123_v8"></script>
 </body>
+
 </html>

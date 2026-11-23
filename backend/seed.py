@@ -28,35 +28,39 @@ def seed_db():
     beneficiaries_data = [
         {
             "beneficiary_id": "JH1001",
-            "name": "Ramesh Kumar",
-            "family_members": 4,
+            "name": "Chandan",
+            "family_members": 1,
             "monthly_entitlement": 0.5,
             "collected_quantity": 0.0,
-            "status": "Active"
+            "status": "Active",
+            "photo_url": "/uploads/faces/JH1001_registered.jpg"
         },
         {
             "beneficiary_id": "JH1002",
-            "name": "Sita Devi",
+            "name": "Akshat",
             "family_members": 2,
             "monthly_entitlement": 0.5,
             "collected_quantity": 0.0,
-            "status": "Active"
+            "status": "Active",
+            "photo_url": "/uploads/faces/JH1002_registered.jpg"
         },
         {
             "beneficiary_id": "JH1003",
-            "name": "Mohan Das",
-            "family_members": 5,
+            "name": "Arif",
+            "family_members": 1,
             "monthly_entitlement": 0.5,
             "collected_quantity": 0.0,
-            "status": "Active"
+            "status": "Active",
+            "photo_url": "/uploads/faces/JH1003_registered.jpg"
         },
         {
             "beneficiary_id": "JH1004",
-            "name": "Sunita Devi",
+            "name": "Anjali",
             "family_members": 3,
             "monthly_entitlement": 0.5,
             "collected_quantity": 0.0,
-            "status": "Active"
+            "status": "Active",
+            "photo_url": "/uploads/faces/JH1004_registered.jpg"
         }
     ]
     

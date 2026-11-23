@@ -50,6 +50,30 @@ async def add_no_cache_headers(request, call_next):
 # In-memory store for active dispenses
 active_dispenses: Dict[str, dict] = {}
 
+# Auto-sync beneficiary photos on startup to prevent data loss on ephemeral cloud restarts
+@app.on_event("startup")
+def sync_beneficiary_photos_on_startup():
+    try:
+        db = next(get_db())
+        faces_dir = os.path.join(os.path.dirname(__file__), "uploads", "faces")
+        os.makedirs(faces_dir, exist_ok=True)
+        
+        beneficiaries = db.query(models.Beneficiary).all()
+        updated = False
+        for ben in beneficiaries:
+            expected_filename = f"{ben.beneficiary_id}_registered.jpg"
+            disk_path = os.path.join(faces_dir, expected_filename)
+            if os.path.exists(disk_path):
+                expected_url = f"/uploads/faces/{expected_filename}"
+                if ben.photo_url != expected_url:
+                    ben.photo_url = expected_url
+                    updated = True
+        if updated:
+            db.commit()
+            print("Successfully auto-synced registered face photos on startup.")
+    except Exception as e:
+        print(f"Startup photo sync notice: {e}")
+
 # Hardware Mode config
 HARDWARE_MODE = True
 hardware_active_job: dict = None
