@@ -145,7 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
             await faceVideo.play();
         } catch (err) {
             console.error("Camera access error:", err);
-            alert("Camera access is needed for Aadhaar Face Authentication. Please allow camera permissions.");
+            alert("Camera access is needed for Face Biometric Authentication. Please allow camera permissions.");
             showScreen(verifyScreen);
             return;
         }
